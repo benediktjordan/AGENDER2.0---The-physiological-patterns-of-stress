@@ -42,9 +42,11 @@ The AGENDER 2.0 project's investigation into the correlation between heart rate 
 - Employed 49 HRV, HRV & ACC (physical activity) features for the analysis.
 - Models trained to classify only high-stress events consistently outperformed those trained on all stress events, with an increase in accuracy of 9%, 12%, 13%, and 9% for Decision Forest, MLP, SVM, and Stacking Ensemble models, respectively.
 
+ ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/8cf93640ad08cd8b3f79288f005634f3a510fbf9/img/Figure_4_Boxplot_of_accuracies_for_all_stress_events_and_only_high-stress_events_for_all_four_ML_models.png)
+
+
 These results underscore the efficacy of the AGENDER 2.0's analytical approach, demonstrating the nuanced relationship between physiological markers and perceived stress, and the enhancing effect of accounting for physical activity in stress event classification.
 
- ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/8cf93640ad08cd8b3f79288f005634f3a510fbf9/img/Figure_4_Boxplot_of_accuracies_for_all_stress_events_and_only_high-stress_events_for_all_four_ML_models.png)
 
 
 ## Data Structure
