@@ -37,23 +37,22 @@ These results underscore the AGENDER 2.0 project's contribution to the broader f
 
 ## Data Structure
 
-The AGENDER 2.0 project utilizes a comprehensive dataset encompassing various physiological and activity-based metrics. The dataset was collected by ... in the process of her PhD thesis. 
+The AGENDER 2.0 project utilizes a comprehensive dataset encompassing various physiological and activity-based metrics. The dataset was collected by Anne-Christin Loheit in the process of her PhD thesis. 
 
 The key components of the dataset include:
-- Electrocardiogram (ECG) Data: 
+- Electrocardiogram (ECG) Data: t
 - Accelerometer Data (ACC): Capturing movement and physical activity, integrated to consider the impact of physical activity on stress levels.
 - Experience Sampling Method (ESM) Data: Subjective stress levels reported by participants, providing a ground truth for stress measurement. Each participants received a prompt asking for the stress events since the last prompt (10 minute resolution; 0-100 stress score) via a smartphone app. 
 
 This data was  collected from 25 older adults (11 females; 69±4, 60-76years). ECG and ACC data was collected for for each adult during 5.76 days on average (total of 144 days) with a chest strap (EKG-move3; Movisens, Germany) in the daily live. In total, 168 ESM stress usable stress samples were collected. 
 
+## Data Preprocessing
+The AGENDER 2.0 project utilizes a series of sophisticated data preprocessing steps to ensure the reliability and accuracy of the subsequent analysis. These steps are crucial for preparing the physiological data for effective machine learning modeling. Below are the key preprocessing stage:
 
-## Labeling
+### Labeling
 
 - For every stress event, a corresponding no-stress event at the same time at another day was extracted (to minimize circadian effects).
 - 20-minute time windows of ECG and ACC data around events were used for further analysis.
-
-## Data Preprocessing
-The AGENDER 2.0 project utilizes a series of sophisticated data preprocessing steps to ensure the reliability and accuracy of the subsequent analysis. These steps are crucial for preparing the physiological data for effective machine learning modeling. Below are the key preprocessing stages:
 
 ### Filtering
 
@@ -98,6 +97,32 @@ The final step involves the creation of features for the machine learning models
 - These features are derived with the same time resolution (1 value every 30 seconds), ensuring consistency across all data points.
 
 Each of these steps is meticulously designed and implemented to ensure that the data used in the AGENDER 2.0 project is of the highest quality, enabling robust and reliable analysis in the subsequent stages of the project.
+
+This data preprocessing process resulted in four different datasets: with and without physical activity features as well as all stress events and only high-stress (score above 66) events which were subsequently used in the modeling process. 
+
+## Modeling Process 
+
+Following the comprehensive data preprocessing, the AGENDER 2.0 project advances into an intricate modeling phase, characterized by meticulous model training, hyperparameter tuning, and validation. Key aspects of this phase are outlined below:
+
+### Model Training and Hyperparameter Tuning
+- **Model Selection:** Various machine learning models, including Decision Forests, Support Vector Machines, Multilayer Perceptrons, and LSTM networks, are carefully selected based on their suitability for time-series data analysis and stress prediction.
+- **Hyperparameter Optimization:** Each model undergoes a rigorous hyperparameter tuning process. This involves experimenting with different configurations to identify the optimal set of parameters that yield the best performance. Techniques like Grid Search and Random Search are employed to systematically explore a wide range of parameter combinations.
+- **Customized Training Regimens:** Depending on the model's complexity and the nature of the data, customized training regimens are developed. For instance, LSTM networks require specific considerations for sequence learning, while ensemble methods focus on how individual model predictions are combined.
+
+### Cross-Validation and Model Evaluation
+
+- **Nested Cross-Validation:** To ensure the generalizability of the models and to prevent overfitting, a nested cross-validation approach is utilized. This involves an outer k-fold cross-validation to assess the model's performance and an inner loop for hyperparameter tuning.
+  - **Outer Loop:** Divides the dataset into k distinct subsets (or folds). Each fold serves as a test set while the remaining k-1 folds form the training set. This process is repeated k times with each fold used exactly once as a test set.
+  - **Inner Loop:** Within each iteration of the outer loop, another layer of k-fold cross-validation is conducted on the training set to tune the hyperparameters. The best parameter set is then used to train the model on the entire training set.
+- **Performance Metrics:** The project employs a range of metrics, including accuracy, F1-score, and mean squared error, to evaluate the models' predictive capabilities. These metrics provide a comprehensive view of the models' performance, balancing the aspects of precision, recall, and error rates.
+
+### Interpretation and Visualization
+
+- **Feature Importance Analysis:** Post model training, the project emphasizes understanding the drivers behind the model's predictions. Techniques like SHAP values are utilized to interpret the model's decision-making process, highlighting the most influential features in predicting stress.
+- **Result Visualization:** To effectively communicate the findings, the project includes a suite of visualization tools. These tools are used to illustrate the models' performance, feature importance, and any notable patterns in the data, making the results accessible and interpretable.
+
+
+
 
 
   
