@@ -2,7 +2,7 @@
 
 ## Overview
 
-AGENDER 2.0 (Advanced Gestalt ENgineering for Data Exploration and Research) is a project developed during a master's program in Computational Modeling and Simulation with a focus on Life Sciences at the Technische Universität Dresden. This project aims to explore the intricate relationship between acute stress and Heart Rate Variability (HRV) in daily life, accounting for the impact of physical activity.
+AGENDER 2.0 is a project developed during a master's program in Computational Modeling and Simulation with a focus on Life Sciences at the Technische Universität Dresden. This project aims to explore the intricate relationship between acute stress and Heart Rate Variability (HRV) in daily life, accounting for the impact of physical activity.
 
 The project combines advanced machine learning techniques and statistical analysis to analyze HRV data, aiming to provide insights into stress patterns in real-world settings. This interdisciplinary work is a blend of computational neuroscience, data science, and psychology, leveraging large-scale data analysis for impactful health-related discoveries.
 Repository Content
@@ -17,6 +17,8 @@ This repository contains the Python code developed for the AGENDER 2.0 project. 
 
 ## Project Results
 The AGENDER 2.0 project has yielded quantifiable and significant insights in the correlation of physiological data with stress levels. The detailed outcomes of the project are as follows:
+
+
 
 - Predictive Analysis Accuracy: The machine learning models developed in the project demonstrated a high degree of accuracy in predicting stress levels based on HRV and ACC data.
   - The models achieved an accuracy rate of [insert specific accuracy percentage here]%.
