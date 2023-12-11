@@ -26,7 +26,7 @@ The AGENDER 2.0 project's investigation into the correlation between heart rate 
 
   ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/88c0014916eb5ac2b7d770f6fd7660f3f0a17508/img/Figure_1_Boxplot_of_Decision_Forest_accuracies.png)
  
- ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/8cf93640ad08cd8b3f79288f005634f3a510fbf9/img/Figure_2_Barchart_of_mean_SHAP_values_of_10_features_which_are_most_contribitive_for_this_Decision_Forest.png)
+ ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/029b4cb4470d6b4d1e553ec5d3cf6fb5dc30d047/img/Figure_2_Barchart_of_mean_SHAP_values_of_10_features_that_are_most_contribitive_for_this_Decision_Forest.png)
 
  
 ### Impact of Physical Activity on Classification Accuracy
