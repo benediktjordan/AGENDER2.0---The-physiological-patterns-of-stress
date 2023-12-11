@@ -17,22 +17,28 @@ This repository contains the Python code developed for the AGENDER 2.0 project. 
 - Machine Learning Models for Classification
 
 ## Project Results
-The AGENDER 2.0 project has yielded quantifiable and significant insights in the correlation of physiological data with stress levels. The detailed outcomes of the project are as follows:
+The AGENDER 2.0 project's investigation into the correlation between heart rate variability (HRV) and stress levels, along with the influence of physical activity, has led to significant findings:
 
-- Predictive Analysis Accuracy: The machine learning models developed in the project demonstrated a high degree of accuracy in predicting stress levels based on HRV and ACC data.
-  - The models achieved an accuracy rate of [insert specific accuracy percentage here]%.
-  - Key HRV features such as the Mean RR-Interval and Median RR-Interval were found to be particularly predictive of stress, with a significance level of [insert specific significance level here].
+### HR & HRV Relationship to Stress
+- Utilized 46 HRV & HR features for stress classification in a binary context.
+- Achieved the highest mean accuracy of 74.2% using the Decision Forest model.
+- Identified Mean and Median NN Interval as the most contributive features for this model.
 
-- Enhanced Model Performance with Movement Data: Integration of movement data (ACC features) alongside HRV features significantly improved the predictive performance of the models.
-  - The inclusion of ACC data led to an increase in model accuracy by [insert specific percentage increase here]%, illustrating the importance of considering physical activity in stress analysis.
+  ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/88c0014916eb5ac2b7d770f6fd7660f3f0a17508/img/Figure_1_Boxplot_of_Decision_Forest_accuracies.png)
 
-- High Stress Event Detection: The models showed heightened effectiveness in identifying high-stress events, highlighting the sensitivity of HRV changes in relation to acute stress episodes.
-  - For high-stress event detection, the model's performance was notably better, with an accuracy increase of [insert specific percentage increase here]% compared to normal stress detection.
 
-- Statistical Analysis Findings: The project also included a detailed statistical analysis, revealing significant interactions between stress and gender for HRV features like RMSSD and HF Power.
-  - The ANOVA analysis indicated a statistical trend and significance for the interaction between stress and gender for these HRV features, with a p-value of [insert specific p-value here].
+### Impact of Physical Activity on Classification Accuracy
 
-These results underscore the AGENDER 2.0 project's contribution to the broader field of computational neuroscience and mental health, demonstrating the potential of physiological data in advanced stress analysis.
+- All machine learning models trained with and without physical activity features showed improved performance when including physical activity data.
+- The incorporation of physical activity increased the accuracy by 8%, 8%, 5%, and 9% for Decision Forest, MLP, SVM, and Stacking Ensemble models, respectively.
+
+### Emphasis on High-Stress Events
+
+- Focused on two subsets of events: all stress levels and high-stress levels, both binarized.
+- Employed 49 HRV, HRV & ACC (physical activity) features for the analysis.
+- Models trained to classify only high-stress events consistently outperformed those trained on all stress events, with an increase in accuracy of 9%, 12%, 13%, and 9% for Decision Forest, MLP, SVM, and Stacking Ensemble models, respectively.
+
+These results underscore the efficacy of the AGENDER 2.0's analytical approach, demonstrating the nuanced relationship between physiological markers and perceived stress, and the enhancing effect of accounting for physical activity in stress event classification.
 
 
 ## Data Structure
