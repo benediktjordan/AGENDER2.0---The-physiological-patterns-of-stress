@@ -25,12 +25,16 @@ The AGENDER 2.0 project's investigation into the correlation between heart rate 
 - Identified Mean and Median NN Interval as the most contributive features for this model.
 
   ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/88c0014916eb5ac2b7d770f6fd7660f3f0a17508/img/Figure_1_Boxplot_of_Decision_Forest_accuracies.png)
+ 
+ ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/8cf93640ad08cd8b3f79288f005634f3a510fbf9/img/Figure_2_Barchart_of_mean_SHAP_values_of_10_features_which_are_most_contribitive_for_this_Decision_Forest.png)
 
-
+ 
 ### Impact of Physical Activity on Classification Accuracy
 
 - All machine learning models trained with and without physical activity features showed improved performance when including physical activity data.
 - The incorporation of physical activity increased the accuracy by 8%, 8%, 5%, and 9% for Decision Forest, MLP, SVM, and Stacking Ensemble models, respectively.
+
+ ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/8cf93640ad08cd8b3f79288f005634f3a510fbf9/img/Figure_3_Boxplot_of_accuracies_with_and_without_physical_activity_features_for_all_four_ML_models.png)
 
 ### Emphasis on High-Stress Events
 
@@ -39,6 +43,8 @@ The AGENDER 2.0 project's investigation into the correlation between heart rate 
 - Models trained to classify only high-stress events consistently outperformed those trained on all stress events, with an increase in accuracy of 9%, 12%, 13%, and 9% for Decision Forest, MLP, SVM, and Stacking Ensemble models, respectively.
 
 These results underscore the efficacy of the AGENDER 2.0's analytical approach, demonstrating the nuanced relationship between physiological markers and perceived stress, and the enhancing effect of accounting for physical activity in stress event classification.
+
+ ![alt text](https://github.com/benediktjordan/AGENDER2.0/blob/8cf93640ad08cd8b3f79288f005634f3a510fbf9/img/Figure_4_Boxplot_of_accuracies_for_all_stress_events_and_only_high-stress_events_for_all_four_ML_models.png)
 
 
 ## Data Structure
