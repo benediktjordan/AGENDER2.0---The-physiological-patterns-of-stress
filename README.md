@@ -30,7 +30,7 @@ The AGENDER 2.0 project's investigation into the correlation between heart rate 
 
  
 ### Impact of Physical Activity on Classification Accuracy
-
+ 
 - All machine learning models trained with and without physical activity features showed improved performance when including physical activity data.
 - The incorporation of physical activity increased the accuracy by 8%, 8%, 5%, and 9% for Decision Forest, MLP, SVM, and Stacking Ensemble models, respectively.
 
