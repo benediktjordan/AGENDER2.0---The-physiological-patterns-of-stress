@@ -50,7 +50,8 @@ epochs = nk.epochs_create(df_ecg, events, sampling_rate=1024, epochs_start=-(epo
 
 
 
-#region PreStep 1: load & transform all ECG & ACC data (until filtered epochs)
+#region PreStep 1: load & transform (including filtering) all ECG & ACC data (until filtered epochs)
+# this code is based on the script "loading_data_and_initial_transformations.py"
 
 t0 = time.time()
 path = r"C:\Users\BJ\Documents\07_MPI\03_Data\01_Stress\01_Roehner\02_RawData\Preprocessed"
@@ -149,9 +150,9 @@ df_overview.to_csv('C:\\Users\\BJ\\PycharmProjects\\AGENDER2.0\\obj\\probands_ev
 #endregion
 
 #region PreStep 2: Peak detection, correction & noise detection
+# this code-region is based on functions in two scripts: "peak_detection_and_peakNoise_detection.py" & "ECGNoise_detection.py"
 
     # Peak detection
-    ## no code here since everything is done in script 03-2_RRPeak_NoiseDetection
 path = r"C:\Users\BJ\PycharmProjects\AGENDER2.0\obj"
 files = os.listdir(path)
 condition = "epochs_660seconds_filtered"
@@ -215,7 +216,10 @@ peaks_corrected_cutoff_noisecorrected = load_obj("peaks_corrected_cutoff_noiseco
 
 #endregion
 
+
 #region Pipeline 1: Ensemble classification preparation: segment peaks & feature creation
+# this code-region is based on functions in the script "segmentation_and_feature_creation.py"
+
     # Create Peak segments
 segment_duration = 30           #seconds
 peaks_corrected_cutoff_noisecorrected_segmented = create_segments(peaks_corrected_cutoff_noisecorrected, segment_duration)
@@ -250,6 +254,7 @@ df_class_allfeatures = load_obj("df_class_allfeatures.pkl")
 #endregion
 
 #region Subpipeline 1.1 Segment data based on individual noise labels
+# this code-region is based on functions in the script "segmentation_and_feature_creation.py"
 
     # Segment
 peaks_corrected_cutoff = load_obj("peaks_corrected_cutoff.pkl")
@@ -286,6 +291,8 @@ df_class_allfeatures_noiseIMPROVED = load_obj("df_class_allfeatures_noiseIMPROVE
 
 
 #region Pipeline 2: LSTM classification preparation:  segment epochs & add noise & ACC features to ECG epochs
+# this code-region is based on functions in the script "segmentation_and_feature_creation.py"
+
     #Add noise to epochs
 noise = load_obj("noise_labels.pkl")
 vis_period = 15
@@ -403,6 +410,8 @@ df_ecg_features = feature_creation(epochs_segmented)
 #endregion
 
 #region Pipeline 02: LSTM
+# this code-region is based on functions in the script "lstm.py"
+
 # Train & Test data of all participants
 train_split = 0.8 #Percentage of training data
 condition = "epochs_segmented_600seconds"
