@@ -82,19 +82,25 @@ Accurate detection of R-peaks in the ECG data is critical for HRV analysis. The 
 - Advanced algorithms from the Neurokit toolbox to identify peaks accurately.
 - Further analysis based solely on peaks detected ensures the precision of subsequent calculations.
 
-### Peak Correction
+### Peak Correction and Noise Exclusion
 
 To ensure the reliability of the detected peaks:
 
 - Erroneous and ectopic heartbeats are identified and corrected.
 - A method by Citi et al. (2012) is used for this purpose, improving the accuracy of the heart rate data.
 
-### Noise Exclusion
-
 Noise exclusion is vital to maintain data integrity:
 
 - Manual noise labeling of 15-second segments is conducted.
 - Epochs with more than 30% noisy segments are excluded from the analysis.
+
+Additionally, different other approaches were tested in order to correct peaks and detect and exclude noise: 
+- NeuroKit2 Method for Peak Correction: Implemented a method using NeuroKit2 (nk) for peak correction in ECG data. This method involves iterative processes and is configured to use the 'Kubios' method for peak correction. It results in a structured dictionary of corrected peaks, with data organized by participant and epoch.
+- Comparative Visualization: Developed a class and methods for visualizing the original and corrected peaks. This includes comparing peaks detected over whole epochs with those detected in shorter segments. It helps in understanding the effectiveness of the peak correction algorithms and their impact on the data.
+- Manual Noise Labeling in ECG Data: Implemented a process for manually labeling noise in ECG data. This involved visualizing ECG segments and associated peaks, then manually classifying segments as noisy or noise-free based on visual inspection. Created an interactive system for labeling noise in the aggregated data array.
+- Exploration of Multiple Peak Detection Algorithms: Experimented with a variety of peak detection algorithms provided by NeuroKit2, such as 'pantompkins1985', 'nabian2018', 'hamilton2002', and others. This allowed for a comprehensive comparison of how different algorithms perform on the same dataset.
+- Comprehensive Peak and Artifact Data Management: Organized and managed extensive peak and artifact data, including original peaks, NeuroKit2 corrected peaks, and externally corrected peaks, in a consolidated structure for ease of analysis and comparison.
+  
 
 ### Segmentation
 
@@ -114,12 +120,18 @@ Each of these steps is meticulously designed and implemented to ensure that the 
 
 This data preprocessing process resulted in four different datasets: with and without physical activity features as well as all stress events and only high-stress (score above 66) events which were subsequently used in the modeling process. 
 
+Additionally, other approaches were tested in the process of the project:
+- External HRV Analysis with 'saipai-hrv.com': Integrated the capabilities of 'http://www.saipai-hrv.com/', a specialized web-based tool for heart rate variability (HRV) analysis. The process involved preparing and uploading R peak data from ECG signals as text files to the website. The platform then processed these files to calculate sympathetic and parasympathetic activity indices (SAI and PAI), key metrics in HRV analysis. This step marks an innovative approach to enriching the project's HRV analysis by utilizing external advanced computational tools, thereby enhancing the understanding of autonomic nervous system dynamics as reflected in ECG data.
+- ECG and ACC Data Combination: Combined ECG and resampled Accelerometer (ACC) data within epochs, providing a more comprehensive dataset for LSTM processing.
+- Segmentation of ECG Epochs: Implemented a segmentation process for ECG epochs, dividing each epoch into smaller, manageable segments for detailed LSTM analysis.
+- Creation of Segmented ECG and ACC Data: Developed a method for creating segmented ECG and ACC data, aligning both datasets for synchronized analysis in LSTM, ensuring that each segment contains relevant and aligned information from both data types.
+
 ## Modeling Process 
 
 Following the comprehensive data preprocessing, the AGENDER 2.0 project advances into an intricate modeling phase, characterized by meticulous model training, hyperparameter tuning, and validation. Key aspects of this phase are outlined below:
 
 ### Model Training and Hyperparameter Tuning
-- **Model Selection:** Various machine learning models, including Decision Forests, Support Vector Machines, Multilayer Perceptrons, and LSTM networks, are carefully selected based on their suitability for time-series data analysis and stress prediction.
+- **Model Selection:** Seven different machine learning models, including Decision Trees, Decision Forests, Support Vector Machines, Multilayer Perceptrons, Logistic Regression, Ensemble Stacking Model, and LSTM networks, have been carefully selected based on their suitability for time-series data analysis and stress prediction. All of these models were then trained and optimized iteratively, using different configurations. 
 - **Hyperparameter Optimization:** Each model undergoes a rigorous hyperparameter tuning process. This involves experimenting with different configurations to identify the optimal set of parameters that yield the best performance. Techniques like Grid Search and Random Search are employed to systematically explore a wide range of parameter combinations.
 - **Customized Training Regimens:** Depending on the model's complexity and the nature of the data, customized training regimens are developed. For instance, LSTM networks require specific considerations for sequence learning, while ensemble methods focus on how individual model predictions are combined.
 

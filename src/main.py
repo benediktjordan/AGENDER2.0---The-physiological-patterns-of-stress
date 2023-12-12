@@ -1,4 +1,3 @@
-#TODO: Unbedingt peak-saving problem lösen: Speichere die Peaks in dem epochs-dict.
 
 
 
@@ -49,8 +48,7 @@ epochs = nk.epochs_create(df_ecg, events, sampling_rate=1024, epochs_start=-(epo
 #endregion
 
 
-
-#region PreStep 1: load & transform (including filtering) all ECG & ACC data (until filtered epochs)
+#region PreProcessing 1: load & transform (including filtering) all ECG & ACC data (until filtered epochs)
 # this code is based on the script "loading_data_and_initial_transformations.py"
 
 t0 = time.time()
@@ -149,7 +147,7 @@ df_overview.to_csv('C:\\Users\\BJ\\PycharmProjects\\AGENDER2.0\\obj\\probands_ev
 
 #endregion
 
-#region PreStep 2: Peak detection, correction & noise detection
+#region PreProcessing 2: Peak detection, correction & noise detection
 # this code-region is based on functions in two scripts: "peak_detection_and_peakNoise_detection.py" & "ECGNoise_detection.py"
 
     # Peak detection
@@ -216,8 +214,7 @@ peaks_corrected_cutoff_noisecorrected = load_obj("peaks_corrected_cutoff_noiseco
 
 #endregion
 
-
-#region Pipeline 1: Ensemble classification preparation: segment peaks & feature creation
+#region PreProcessing 3: Segment peaks & feature creation
 # this code-region is based on functions in the script "segmentation_and_feature_creation.py"
 
     # Create Peak segments
@@ -251,7 +248,7 @@ print("Time of whole df creation was " + str(t1-t0))
 save_obj(df_class_allfeatures, "df_class_allfeatures")
 df_class_allfeatures = load_obj("df_class_allfeatures.pkl")
 
-#endregion
+
 
 #region Subpipeline 1.1 Segment data based on individual noise labels
 # this code-region is based on functions in the script "segmentation_and_feature_creation.py"
@@ -288,9 +285,11 @@ save_obj(df_class_allfeatures_noiseIMPROVED, "df_class_allfeatures_noiseIMPROVED
 df_class_allfeatures_noiseIMPROVED = load_obj("df_class_allfeatures_noiseIMPROVED.pkl")
 
 #endregion
+#endregion
 
 
-#region Pipeline 2: LSTM classification preparation:  segment epochs & add noise & ACC features to ECG epochs
+#region Classification Pipeline 1: LSTM classification
+#region LSTM classification preparation:  segment epochs & add noise & ACC features to ECG epochs
 # this code-region is based on functions in the script "segmentation_and_feature_creation.py"
 
     #Add noise to epochs
@@ -396,21 +395,8 @@ plot_cm(
 
 #endregion
 
-
-
-
-
-#region Pipeline 01 Feature Creation
-# Calculate HRV features
-df_ecg_features = feature_creation(epochs_segmented)
-
-#TODO: Calculate "Condition" (Stress Intensity) again & add to feature dataframe (its the label)
-#TODO: FInd out minimal period needed for HRV feature computation!
-
-#endregion
-
-#region Pipeline 02: LSTM
-# this code-region is based on functions in the script "lstm.py"
+#region LSTM execution and evaluation
+# this code-region is based on functions in the script "lstm.py" as well as on "visualizations_functions.py"
 
 # Train & Test data of all participants
 train_split = 0.8 #Percentage of training data
@@ -455,28 +441,6 @@ model.evaluate(x_test_all, y_test_encoded)
 y_pred = model.predict(x_test_all)
 
 #Show confusion matrix
-def plot_cm(y_true, y_pred, class_names):
-    cm = confusion_matrix(y_true, y_pred)
-    fig, ax = plt.subplots(figsize=(18, 16))
-    ax = sns.heatmap(
-        cm,
-        annot=True,
-        fmt="d",
-        cmap=sns.diverging_palette(220, 20, n=7),
-        ax=ax
-    )
-
-    plt.ylabel('Actual')
-    plt.xlabel('Predicted')
-    ax.set_xticklabels(class_names)
-    ax.set_yticklabels(class_names)
-    b, t = plt.ylim() # discover the values for bottom and top
-    b += 0.5 # Add 0.5 to the bottom
-    t -= 0.5 # Subtract 0.5 from the top
-    plt.ylim(b, t) # update the ylim(bottom, top) values
-    plt.show() # ta-da!
-
-
 plot_cm(
     enc.inverse_transform(y_test_encoded),
     enc.inverse_transform(y_pred),
@@ -484,3 +448,208 @@ plot_cm(
 )
 
 #endregion
+#endregion
+
+#region Classification Pipeline 2-8: all supervised-learning models except LSTM
+
+#region Preparation for all supervised learning models (except LSTM)
+# the included steps were performed in varying combinations to test different data preprocessing approaches
+
+df_class_allfeatures = load_obj("df_class_allfeatures.pkl")
+
+df_class_allfeatures = load_obj("df_class_allfeatures_noiseIMPROVED.pkl") #temporary
+
+#region Improvement pipeline 1.3: reducing epoch length to 10 minutes (from 20 minutes)
+#deleting first 5 minutes (segments 1-10) and last 5 minutes (segments 31-40)
+index_del = [1,2,3,4,5,6,7,8,9,10,31,32,33,34,35,36,37,38,39,40]
+for i in index_del:
+	df_class_allfeatures = df_class_allfeatures.drop(df_class_allfeatures[df_class_allfeatures.Segment == i].index)
+
+#endregion
+
+#region find out which columns contain NaN values
+for i in list(df_class_allfeatures):
+	print("The column" + str(i) + " contains following number of Nan "+ str(df_class_allfeatures[i].isnull().sum()))
+#endregion
+
+#region delete features which are not necessary (low frequency HRV)
+
+features_del = ["HRV_LF", "HRV_LFHF", "HRV_LFn", "HRV_ULF", "HRV_VLF", "HRV_SampEn", "Proband", "Segment", "Epoch"]
+df_class_allfeatures_del = df_class_allfeatures.drop(features_del, axis = 1)
+
+#following two lines for LOSOCV (proband information remains included)
+features_del_new = ["HRV_LF", "HRV_LFHF", "HRV_LFn", "HRV_ULF", "HRV_VLF", "HRV_SampEn", "Segment", "Epoch"]
+df_class_allfeatures_del = df_class_allfeatures.drop(features_del_new, axis = 1)
+
+#endregion
+
+#region drop NaN rows
+# Note: only HRV_HFn,HRV_LnHF, HRV_HF contain each 1 NaN value -> only 1 row is dropped
+df_class_allfeatures_del_NaN = df_class_allfeatures_del.dropna()
+#endregion
+
+#region convert label: Subpipeline 01: convert into binary
+df_class_allfeatures_del_NaN_binary = df_class_allfeatures_del_NaN.copy()
+df_class_allfeatures_del_NaN_binary.loc[df_class_allfeatures_del_NaN_binary['Label'] > 0, 'Label'] = 1
+#save_obj(df_class_allfeatures_del_NaN_binary, "df_class_allfeatures_del_NaN_binary")
+#df_class_allfeatures_del_NaN_binary = load_obj("df_class_allfeatures_del_NaN_binary.pkl")
+
+#endregion
+
+#region convert label: subpipeline 01.2: convert into binary but only taking "high stress" into account)
+df_class_allfeatures_del_NaN_binary = df_class_allfeatures_del_NaN.copy()
+
+df_class_allfeatures_del_NaN_binary.loc[df_class_allfeatures_del_NaN_binary['Label'] > 66, 'Label'] = 1
+#drop all rows were label column contains value above 1
+df_class_allfeatures_del_NaN_binary = df_class_allfeatures_del_NaN_binary.drop(df_class_allfeatures_del_NaN_binary[df_class_allfeatures_del_NaN_binary.Label >1].index)
+
+#balance the data again
+df_class_allfeatures_del_NaN_binary = df_class_allfeatures_del_NaN_binary.sample(frac=1)#shuffle
+number_to_drop = df_class_allfeatures_del_NaN_binary[df_class_allfeatures_del_NaN_binary["Label"]==0].shape[0]-df_class_allfeatures_del_NaN_binary[df_class_allfeatures_del_NaN_binary["Label"]==1].shape[0]
+counter = 0
+index = 0
+while counter < number_to_drop:
+	try:
+		df_class_allfeatures_del_NaN_binary["Label"].loc[index]
+	except:
+		index = index+1
+		continue
+	else:
+		if df_class_allfeatures_del_NaN_binary["Label"].loc[index] == 0:
+			df_class_allfeatures_del_NaN_binary = df_class_allfeatures_del_NaN_binary.drop(labels = index, axis = 0)
+			counter = counter + 1
+			index = index +1
+		else:
+			index = index + 1
+
+#endregion
+
+#region shuffle dataset
+df_class_allfeatures_del_NaN_binary_shuffled = df_class_allfeatures_del_NaN_binary.sample(frac=1)
+df_class_allfeatures_del_NaN_binary_shuffled = df_class_allfeatures_del_NaN_binary_shuffled.reset_index(drop=True)
+#save_obj(df_class_allfeatures_del_NaN_binary_shuffled, "df_class_allfeatures_del_NaN_binary_shuffled")
+#save_obj(df_class_allfeatures_del_NaN_binary_shuffled, "df_class_allfeatures_del_NaN_binary_shuffled_includingProband")
+
+#endregion
+
+#region split training & test data
+# the splitting function is included in the script "preprocessing_for_modeling.py"
+
+#Note: better use SKlearn splitting function
+
+#X = df_class_allfeatures_del_NaN_binary_shuffled.drop("Label", axis = 1)
+#y = df_class_allfeatures_del_NaN_binary_shuffled["Label"]
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=3)
+
+#endregion
+
+
+#region different datasets from different (sub)pipelines
+#Basic Pipelind
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled.pkl")
+
+#Basic Pipeline INCLUDING "Proband" column
+df_class_allfeatures_del_NaN_binary_shuffled_includingProband = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_includingProband.pkl")
+
+#Subpipeline 1.1: Noise improved (noise excluded on level of noisy segments NOT whole epochs)
+df_class_allfeatures_del_NaN_binary_shuffled_NOISEIMPROVED = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_NOISEIMPROVED.pkl")
+
+# Subpipeline 1.2.1: Noise improved AND only high stress included!
+save_obj(df_class_allfeatures_del_NaN_binary ,"df_class_allfeatures_del_NaN_binary_shuffled_NOISEIMPROVED_HIGHSTRESS")
+df_class_allfeatures_del_NaN_binary_shuffled_NOISEIMPROVED_HIGHSTRESS = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_NOISEIMPROVED_HIGHSTRESS.pkl")
+
+#Subpipeline 1.2.2: Noise NOT improved (excluded on epoch level) and only high stress
+save_obj(df_class_allfeatures_del_NaN_binary ,"df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS")
+df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS.pkl")
+
+# Subpipeline 1.3: epoch length only 10 minutes
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled ,"df_class_allfeatures_del_NaN_binary_shuffled_EPOCH10MIN")
+df_class_allfeatures_del_NaN_binary_shuffled_EPOCH10MIN = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_EPOCH10MIN.pkl")
+
+# Subpipeline 1.3.2 only high stress events & epoch length only 10 minutes
+save_obj(df_class_allfeatures_del_NaN_binary ,"df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS_EPOCH10MIN")
+df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS_EPOCH10MIN = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS_EPOCH10MIN.pkl")
+
+# Subpipeline 1.3.3 improved noise & only high stress events & epoch length only 10 minutes
+save_obj(df_class_allfeatures_del_NaN_binary ,"df_class_allfeatures_del_NaN_binary_NOISEIMPROVED_HIGHSTRESS_EPOCH10MIN")
+df_class_allfeatures_del_NaN_binary_NOISEIMPROVED_HIGHSTRESS_EPOCH10MIN = load_obj("df_class_allfeatures_del_NaN_binary_NOISEIMPROVED_HIGHSTRESS_EPOCH10MIN.pkl")
+
+# Subpipeline: only predictive features: meanNN and meadian NN Interval with NORMAL STRESS
+# normal stress (basic pipeline)
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled.pkl")
+df_class_allfeatures_del_NaN_binary_shuffled_ONLYPREDICTIVE = df_class_allfeatures_del_NaN_binary_shuffled[["HRV_MeanNN", "HRV_MedianNN", "Label", "x1", "x2", "x3"]]
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled_ONLYPREDICTIVE ,"df_class_allfeatures_del_NaN_binary_shuffled_ONLYPREDICTIVE")
+
+# Subpipeline: only predictive features: meanNN and meadian NN Interval with HIGH STRESS
+df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS.pkl")
+df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS_ONLYPREDICTIVE = df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS[["HRV_MeanNN", "HRV_MedianNN", "Label", "x1", "x2", "x3"]]
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS_ONLYPREDICTIVE ,"df_class_allfeatures_del_NaN_binary_shuffled_HIGHSTRESS_ONLYPREDICTIVE")
+
+# Subpipeline: all features except MeanNN and Median NN Interval with NORMAL STRESS
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled.pkl")
+df_class_allfeatures_del_NaN_binary_shuffled_EXCEPTPREDICTIVE = df_class_allfeatures_del_NaN_binary_shuffled.copy()
+del df_class_allfeatures_del_NaN_binary_shuffled_EXCEPTPREDICTIVE["HRV_MeanNN"]
+del df_class_allfeatures_del_NaN_binary_shuffled_EXCEPTPREDICTIVE["HRV_MedianNN"]
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled_EXCEPTPREDICTIVE ,"df_class_allfeatures_del_NaN_binary_shuffled_EXCEPTPREDICTIVE")
+
+# Subpipeline: only using 10 worst performing features (based on SHAP on DF which was trained on all HRV features without ACC)
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled.pkl")
+df_class_allfeatures_del_NaN_binary_shuffled_Only10worstpredictive = df_class_allfeatures_del_NaN_binary_shuffled.copy()
+choosecolumns = ["HRV_GI", "HRV_AI", "HRV_SI", "HRV_RMSSD", "HRV_C2d", "HRV_C2a", "HRV_SD2", "HRV_SD1", "HRV_Cd", "HRV_pNN50", "x1", "x2", "x3", "Label"]
+df_class_allfeatures_del_NaN_binary_shuffled_Only10worstpredictive = df_class_allfeatures_del_NaN_binary_shuffled_Only10worstpredictive[choosecolumns]
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled_Only10worstpredictive ,"df_class_allfeatures_del_NaN_binary_shuffled_Only10worstpredictive")
+
+# Subpipeline: only RMSSD and HF since we want to compare with Roehner findings
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled.pkl")
+df_class_allfeatures_del_NaN_binary_shuffled_OnlyRMSSDandHF = df_class_allfeatures_del_NaN_binary_shuffled.copy()
+choosecolumns = ["HRV_RMSSD", "HRV_HF" , "x1", "x2", "x3", "Label"]
+df_class_allfeatures_del_NaN_binary_shuffled_OnlyRMSSDandHF = df_class_allfeatures_del_NaN_binary_shuffled_OnlyRMSSDandHF[choosecolumns]
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled_OnlyRMSSDandHF ,"df_class_allfeatures_del_NaN_binary_shuffled_OnlyRMSSDandHF")
+
+# Subpipeline: only physical movement features
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled.pkl")
+df_class_allfeatures_del_NaN_binary_shuffled_OnlyMovement = df_class_allfeatures_del_NaN_binary_shuffled.copy()
+choosecolumns = [ "x1", "x2", "x3", "Label"]
+df_class_allfeatures_del_NaN_binary_shuffled_OnlyMovement = df_class_allfeatures_del_NaN_binary_shuffled_OnlyMovement[choosecolumns]
+save_obj(df_class_allfeatures_del_NaN_binary_shuffled_OnlyMovement ,"df_class_allfeatures_del_NaN_binary_shuffled_OnlyMovement")
+
+#endregion
+
+#endregion
+
+#region Classification Pipeline 1: Stacking Ensemble Classifier
+# all the code for this pipeline is included in the script "stacking.py"
+#endregion
+
+#region Classification Pipeline 2: Random Forest Classifier
+# all the code for this pipeline is included in the script "random_forest.py"
+#endregion
+
+#region Classification Pipeline 3: Support Vector Machine Classifier (SVM)
+# all the code for this pipeline is included in the script "support_vector_machine_(SVM).py"
+#endregion
+
+#region Classification Pipeline 4: Decision Tree Classifier
+# all the code for this pipeline is included in the script "decision_tree.py"
+#endregion
+
+#region Classification Pipeline 5: Deep Neural Multilayer Perceptron Classifier (MLP)
+# all the code for this pipeline is included in the script "deep_multilayer_perceptron_(MLP).py"
+#endregion
+
+#region Classification Pipeline 6: Logistic Regression
+# all the code for this pipeline is included in the script "logistic_regression.py"
+#endregion
+
+
+#region possibly outdated Feature Creation
+# Calculate HRV features
+df_ecg_features = feature_creation(epochs_segmented)
+
+#TODO: Calculate "Condition" (Stress Intensity) again & add to feature dataframe (its the label)
+#TODO: FInd out minimal period needed for HRV feature computation!
+
+#endregion
+
+#TODO: Unbedingt peak-saving problem lösen: Speichere die Peaks in dem epochs-dict.
+

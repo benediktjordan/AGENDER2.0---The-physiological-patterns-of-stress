@@ -1,14 +1,6 @@
-
-#region Classification Pipeline 1: ensemble classification pipeline
-
-
-t0 = time.time()
-##This code is based on: https://machinelearningmastery.com/stacking-ensemble-machine-learning-with-python/
-
-
-#region get data
-#get data: train & test split
-df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_EXCEPTPREDICTIVE.pkl")
+#region Classification Pipeline 6: Logistic Regression (focussing on MeanMedian RR Interval only)
+#region getdata
+df_class_allfeatures_del_NaN_binary_shuffled = load_obj("df_class_allfeatures_del_NaN_binary_shuffled_ONLYPREDICTIVE.pkl")
 
 X_acc = df_class_allfeatures_del_NaN_binary_shuffled.drop(["Label"], axis = 1)
 y_acc = df_class_allfeatures_del_NaN_binary_shuffled["Label"]
@@ -44,113 +36,6 @@ y_all = y_all_array.to_numpy()
 X_all_df = X_all_array
 #endregion
 
-
-#region creating stacking functions
-t0 = time.time()
-from numpy import mean
-from numpy import std
-from sklearn.datasets import make_classification
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import StackingClassifier
-from matplotlib import pyplot
-
-# get a stacking ensemble of models
-
-def get_stacking():
-	# define the base models
-	level0 = list()
-	level0.append(('mlp',MLPClassifier(max_iter=1000, activation= "tanh", alpha= 0.05,
-									   hidden_layer_sizes=(256, 128, 64, 32), learning_rate="adaptive",
-									   solver="adam",random_state=1)))
-	level0.append(('DF', RandomForestClassifier(random_state = 1, max_depth = 25,
-												n_estimators = 100, min_samples_split = 2,
-												min_samples_leaf = 2, max_features = 15)))
-	level0.append(('svm', SVC(kernel='rbf', gamma=0.1, C=100)))
-	# define meta learner model
-	level1 = LogisticRegression(solver="saga")
-	# define the stacking ensemble
-	model = StackingClassifier(estimators=level0, final_estimator=level1, cv=5)
-	return model
-
-# get a list of models to evaluate
-def get_models():
-	models = dict()
-	models['MLP'] = MLPClassifier(max_iter=1000, activation= "tanh", alpha= 0.0001,
-									   hidden_layer_sizes=(256, 128, 64, 32), learning_rate="adaptive",
-									   solver="adam",random_state=1)
-	models['DF'] = RandomForestClassifier(random_state = 1, max_depth = 30,
-												n_estimators = 800, min_samples_split = 2,
-												min_samples_leaf = 1, max_features = 15)
-	models['svm'] = SVC(kernel='rbf', gamma=0.1, C=100)
-	models['stacking'] = get_stacking()
-	return models
-
-
-# evaluate a give model using cross-validation
-def evaluate_model(model, X, Y):
-	#cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-	scores = cross_val_score(model, X, Y, scoring='accuracy', cv=10, n_jobs=-1)
-	return scores
-#endregion
-
-#region Pipeline 1: "traditional" hyperparameter tuning & training
-#do hyperparameter tuning for logistic regression:
-t0 = time.time()
-stacking = get_stacking()
-params = {'final_estimator__C': np.logspace(-3,3,7),
-		  'final_estimator__penalty':["l1","l2"]}
-grid = GridSearchCV(estimator=stacking, param_grid=params, cv=5,n_jobs = -1)
-grid_best = grid.fit(X, Y)
-t1 = time.time()
-t1-t0
-
-grid_best.best_params_
-
-#Run stacking model
-# with CV
-#With 10 fold CV
-t0 = time.time()
-from sklearn.model_selection import cross_val_score
-stacking = get_stacking()
-accuracy = cross_val_score(stacking, X, Y, scoring= "accuracy", cv=10)
-accuracy.mean()
-f1 = cross_val_score(stacking, X, Y, scoring= "f1", cv=10)
-f1.mean()
-precision = cross_val_score(stacking, X, Y, scoring= "precision", cv=10)
-precision.mean()
-recall = cross_val_score(stacking, X, Y, scoring= "recall", cv=10)
-recall.mean()
-t1 = time.time()
-t1 - t0
-
-
-# OLD WAY running all models & getting accuracy score
-t0 = time.time()
-models = get_models()
-# evaluate the models and store results
-results, names = list(), list()
-for name, model in models.items():
-	scores = evaluate_model(model, X, Y)
-	results.append(scores)
-	names.append(name)
-	print('>%s %.3f (%.3f)' % (name, mean(scores), std(scores)))
-# plot model performance for comparison
-pyplot.boxplot(results, labels=names, showmeans=True)
-pyplot.show()
-t1 = time.time()
-t1 - t0
-
-
-#endregion
-
-#region Pipeline 2: using nested crossvalidation & feature interpretation with SHAP!
-
 #region nested CV
 t0 = time.time()
 # configure the cross-validation procedure
@@ -178,11 +63,11 @@ for train_ix, test_ix in outer_split:
 	# configure the cross-validation procedure
 	cv_inner = StratifiedKFold(n_splits=3, shuffle=True, random_state=1)
 	# define the model
-	model = get_stacking()
+	model = LogisticRegression(solver="saga")
 
 	# define search space
-	space = {'final_estimator__C': np.logspace(-3,3,7),
-			 'final_estimator__penalty':["l1","l2"]}
+	space = {'C': np.logspace(-3,3,7),
+			 'penalty':["l1","l2"]}
 	#space = {'final_estimator__C': [1],
 	#		 'final_estimator__penalty':["l1"]}
 
@@ -329,99 +214,5 @@ save_obj(X_test, "normalstress_X_test_stacking_withoutACC")
 
 #endregion
 
-#region SHAP Feature interpretation
-
-shap_values = load_obj("normalstress_shap_values_SVM_withACC.pkl")
-X_test = load_obj("normalstress_X_test_SVM_withACC.pkl")
-
-# feature importance plot
-shap.summary_plot(shap_values, X_test, plot_type="bar")
-
-#SHAP feature importance plot
-shap.summary_plot(shap_values, X_test)
-
-
-#Force Plot
-#shap.plots.force(explainer.expected_value[0], shap_values[0])
-
-#partial dependence plot: analyze individual features
-shap.dependence_plot("HRV_MeanNN", shap_values, X_test)
-
-#endregion
-#endregion
 #endregion
 
-
-#region Run Example Stacking model
-## Code from: https://machinelearningmastery.com/stacking-ensemble-machine-learning-with-python/
-
-t0 = time.time()
-# compare ensemble to each baseline classifier
-from numpy import mean
-from numpy import std
-from sklearn.datasets import make_classification
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import StackingClassifier
-from matplotlib import pyplot
-
-# get the dataset
-def get_dataset():
-	X, y = make_classification(n_samples=1000, n_features=20, n_informative=15, n_redundant=5, random_state=1)
-	return X, y
-
-# get a stacking ensemble of models
-def get_stacking():
-	# define the base models
-	level0 = list()
-	level0.append(('lr', LogisticRegression(max_iter=1000)))
-	level0.append(('knn', KNeighborsClassifier()))
-	level0.append(('cart', DecisionTreeClassifier()))
-	level0.append(('svm', SVC()))
-	level0.append(('bayes', GaussianNB()))
-	# define meta learner model
-	level1 = LogisticRegression()
-	# define the stacking ensemble
-	model = StackingClassifier(estimators=level0, final_estimator=level1, cv=5)
-	return model
-
-# get a list of models to evaluate
-def get_models():
-	models = dict()
-	models['lr'] = LogisticRegression()
-	models['knn'] = KNeighborsClassifier()
-	models['cart'] = DecisionTreeClassifier()
-	models['svm'] = SVC()
-	models['bayes'] = GaussianNB()
-	models['stacking'] = get_stacking()
-	return models
-
-# evaluate a give model using cross-validation
-def evaluate_model(model, X, y):
-	cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-	scores = cross_val_score(model, X, y, scoring='accuracy', cv=cv, n_jobs=-1, error_score='raise')
-	return scores
-
-# define dataset
-X, y = get_dataset()
-# get the models to evaluate
-models = get_models()
-# evaluate the models and store results
-results, names = list(), list()
-for name, model in models.items():
-	scores = evaluate_model(model, X, y)
-	results.append(scores)
-	names.append(name)
-	print('>%s %.3f (%.3f)' % (name, mean(scores), std(scores)))
-# plot model performance for comparison
-pyplot.boxplot(results, labels=names, showmeans=True)
-pyplot.show()
-t1 = time.time()
-t1-t0
-
-#endregion

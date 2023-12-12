@@ -422,6 +422,54 @@ df["label"] = label
 df["Condition"] = condition
 #endregion
 
+
+#region create array which contains all segments (one array for ECG & onbe array for labels)
+# Note: the data here is create in an array format with which the LSTM algorithm can deal
+
+def create_array_epoch(epochs):
+    x = []
+    y = []
+    for key in epochs:
+        epoch = epochs[key]
+        x_segment = epochs[key]["ECG"]
+        y_segment = epochs[key]["Condition"]
+
+        x_segment = x_segment.tolist()
+        y_segment = y_segment.tolist()
+
+        x.extend(x_segment)
+        y.extend(y_segment)
+
+    return x, y
+
+def create_array_allepochs(files,condition):
+    """
+
+    :param condition: the substring which has to be contained within PKL file name so that its considered
+    :param train_split:
+    :param segment_duration:
+    :param sampling_rate:
+    :return:
+    """
+    x_all = []
+    y_all = []
+    for name in files:
+        if condition not in name:
+            continue
+        epochs = load_obj(name)
+
+        x, y = create_array_epoch(epochs)
+        x_all.extend(x)
+        y_all.extend(y)
+
+    #save_obj(x_train_all, "x_train_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
+    #save_obj(y_train_all, "y_train_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
+    #save_obj(x_test_all, "x_test_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
+    #save_obj(y_test_all, "y_test_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
+
+    return x_all, y_all
+
+#endregion
 #region create array which contains all segments (one array for ECG & onbe array for labels)
 # Note: the data here is create in an array format with which the LSTM algorithm can deal
 
@@ -463,54 +511,6 @@ def create_array_allepochs_segmented(files,condition, segment_duration, sampling
         x, y = create_array_epoch_segmented(epochs_segmented, segment_duration, sampling_rate)
         x_all = np.concatenate([x_all, x], -3)
         y_all = np.concatenate([y_all, y], -2)
-
-    #save_obj(x_train_all, "x_train_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
-    #save_obj(y_train_all, "y_train_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
-    #save_obj(x_test_all, "x_test_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
-    #save_obj(y_test_all, "y_test_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
-
-    return x_all, y_all
-
-#endregion
-
-#region create array which contains all segments (one array for ECG & onbe array for labels)
-# Note: the data here is create in an array format with which the LSTM algorithm can deal
-
-def create_array_epoch(epochs):
-    x = []
-    y = []
-    for key in epochs:
-        epoch = epochs[key]
-        x_segment = epochs[key]["ECG"]
-        y_segment = epochs[key]["Condition"]
-
-        x_segment = x_segment.tolist()
-        y_segment = y_segment.tolist()
-
-        x.extend(x_segment)
-        y.extend(y_segment)
-
-    return x, y
-
-def create_array_allepochs(files,condition):
-    """
-
-    :param condition: the substring which has to be contained within PKL file name so that its considered
-    :param train_split:
-    :param segment_duration:
-    :param sampling_rate:
-    :return:
-    """
-    x_all = []
-    y_all = []
-    for name in files:
-        if condition not in name:
-            continue
-        epochs = load_obj(name)
-
-        x, y = create_array_epoch(epochs)
-        x_all.extend(x)
-        y_all.extend(y)
 
     #save_obj(x_train_all, "x_train_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
     #save_obj(y_train_all, "y_train_epochs_lenght_" + str(epochs_length) + "_segment_duration_" + str(segment_duration) + "_train_split_" + str(train_split))
