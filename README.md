@@ -2,7 +2,7 @@
 
 ## Overview
 
-AGENDER 2.0 is a project developed during a master's program in Computational Modeling and Simulation with a focus on Life Sciences at the Technische Universität Dresden (Germany), in cooperation with the Max Planck Institute for Human Cognitive and Brain Sciences Leipzig (Germany). This project aims to identify possible patterns corresponding to acute stress in in heart-activity (Electrocardiogram-derived features like Heart Rate and Heart Rate Variability) and physical activity. The data was collected in a naturalistic setting. 
+AGENDER 2.0 is a project developed during a master's program in Computational Modeling and Simulation with a focus on Life Sciences at the Technische Universität Dresden (Germany) in 2020/2021, in cooperation with the Max Planck Institute for Human Cognitive and Brain Sciences Leipzig (Germany). This project aims to identify possible patterns corresponding to acute stress in in heart-activity (Electrocardiogram-derived features like Heart Rate and Heart Rate Variability) and physical activity. The data was collected in a naturalistic setting. 
 
 The project combines advanced machine learning techniques and statistical analysis to analyze ECG and physical activity data, aiming to provide insights into stress patterns in real-world settings. This interdisciplinary work is a blend of computational neuroscience, data science, and psychology, leveraging large-scale data analysis for impactful health-related discoveries
 
