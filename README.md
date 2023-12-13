@@ -60,6 +60,9 @@ The key components of the dataset include:
 
 This data was  collected from 25 older adults (11 females; 69±4, 60-76years). ECG and ACC data was collected for for each adult during 5.76 days on average (total of 144 days) with a chest strap (EKG-move3; Movisens, Germany) in the daily live. In total, 168 ESM stress usable stress samples were collected. 
 
+## Dataset Availability
+Please note that the dataset utilized in this project is not publicly available. This is due to privacy considerations and the rights policies set forth by the Max Planck Institute (MPI). The data includes sensitive and personal information that necessitates strict confidentiality. As such, in adherence to privacy laws and institutional guidelines, the dataset is retained exclusively for the purposes of this research project and is not accessible for external use or review.
+
 ## Data Preprocessing
 The AGENDER 2.0 project utilizes a series of sophisticated data preprocessing steps to ensure the reliability and accuracy of the subsequent analysis. These steps are crucial for preparing the physiological data for effective machine learning modeling. Below are the key preprocessing stage:
 
