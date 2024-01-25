@@ -189,5 +189,4 @@ This project is licensed under the MIT License.
 
 
 ## Acknowledgments
-
-Special thanks to the faculty and peers at Technische Universität Dresden, particularly to those who have supervised and provided valuable insights during the development of this project.
+This project wouldn´t have been possible without the stellar continuous supervision of Antonin Fourcade (main supervisor), Michael Gaebler (lead supervisor), and Nico Scherf (machine learning supervisor). 
