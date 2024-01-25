@@ -17,6 +17,8 @@ This repository contains the Python code developed for the AGENDER 2.0 project. 
 - Machine Learning Models for Classification
 
 ## Project Results
+**Please note:** the following findings are outdated, since a methodological error has been found. The following results have been achieved using a Cross-Validation approach not suitable for this data: data of one and the same event (an event is a 20 minute segment which is labelled either "stress" or "no stress") has been used for the training as well as for the testing in the Cross-Validation. Updated results with a corrected Cross-Validation procedure will be published soon.
+
 The AGENDER 2.0 project's investigation into the correlation between heart rate variability (HRV) and stress levels, along with the influence of physical activity, has led to significant findings:
 
 ### HR & HRV Relationship to Stress
@@ -54,7 +56,7 @@ These results underscore the efficacy of the AGENDER 2.0's analytical approach, 
 The AGENDER 2.0 project utilizes a comprehensive dataset encompassing various physiological and activity-based metrics. The dataset was collected by Anne-Christin Loheit in the process of her PhD thesis. 
 
 The key components of the dataset include:
-- Electrocardiogram (ECG) Data: t
+- Electrocardiogram (ECG) Data: Capturing heart activity by measuring the electrical activity of the heart over time.
 - Accelerometer Data (ACC): Capturing movement and physical activity, integrated to consider the impact of physical activity on stress levels.
 - Experience Sampling Method (ESM) Data: Subjective stress levels reported by participants, providing a ground truth for stress measurement. Each participants received a prompt asking for the stress events since the last prompt (10 minute resolution; 0-100 stress score) via a smartphone app. 
 
