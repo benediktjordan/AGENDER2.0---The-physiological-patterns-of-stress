@@ -4,7 +4,7 @@
 
 AGENDER 2.0 is a project developed during a master's program in Computational Modeling and Simulation with a focus on Life Sciences at the Technische Universität Dresden (Germany) in 2020/2021, in cooperation with the Max Planck Institute for Human Cognitive and Brain Sciences Leipzig (Germany). This project aims to identify possible patterns corresponding to acute stress in in heart-activity (Electrocardiogram-derived features like Heart Rate and Heart Rate Variability) and physical activity. The data was collected in a naturalistic setting. 
 
-The project combines advanced machine learning techniques and statistical analysis to analyze ECG and physical activity data, aiming to provide insights into stress patterns in real-world settings. This interdisciplinary work is a blend of computational neuroscience, data science, and psychology, leveraging large-scale data analysis for impactful health-related discoveries
+The project combines advanced machine learning techniques and statistical analysis to analyze ECG and physical activity data, aiming to provide insights into stress patterns in real-world settings. This interdisciplinary work is a blend of computational neuroscience, data science, and psychology, leveraging large-scale data analysis for impactful health-related discoveries.
 
 ## Repository Content
 
@@ -60,7 +60,7 @@ The key components of the dataset include:
 - Accelerometer Data (ACC): Capturing movement and physical activity, integrated to consider the impact of physical activity on stress levels.
 - Experience Sampling Method (ESM) Data: Subjective stress levels reported by participants, providing a ground truth for stress measurement. Each participants received a prompt asking for the stress events since the last prompt (10 minute resolution; 0-100 stress score) via a smartphone app. 
 
-This data was  collected from 25 older adults (11 females; 69±4, 60-76years). ECG and ACC data was collected for for each adult during 5.76 days on average (total of 144 days) with a chest strap (EKG-move3; Movisens, Germany) in the daily live. In total, 168 ESM stress usable stress samples were collected. 
+This data was  collected from 25 older adults (11 females; 69±4, 60-76years). ECG and ACC data was collected for for each adult during 5.76 days on average (total of 144 days) with a chest strap (EKG-move3; Movisens, Germany) in the daily live. In total, 168 usable ESM stress samples were collected. 
 
 ## Dataset Availability
 Please note that the dataset utilized in this project is not publicly available. This is due to privacy considerations and the rights policies set forth by the Max Planck Institute (MPI). The data includes sensitive and personal information that necessitates strict confidentiality. As such, in adherence to privacy laws and institutional guidelines, the dataset is retained exclusively for the purposes of this research project and is not accessible for external use or review.
@@ -129,7 +129,6 @@ Additionally, other approaches were tested in the process of the project:
 - External HRV Analysis with 'saipai-hrv.com': Integrated the capabilities of 'http://www.saipai-hrv.com/', a specialized web-based tool for heart rate variability (HRV) analysis. The process involved preparing and uploading R peak data from ECG signals as text files to the website. The platform then processed these files to calculate sympathetic and parasympathetic activity indices (SAI and PAI), key metrics in HRV analysis. This step marks an innovative approach to enriching the project's HRV analysis by utilizing external advanced computational tools, thereby enhancing the understanding of autonomic nervous system dynamics as reflected in ECG data.
 - ECG and ACC Data Combination: Combined ECG and resampled Accelerometer (ACC) data within epochs, providing a more comprehensive dataset for LSTM processing.
 - Segmentation of ECG Epochs: Implemented a segmentation process for ECG epochs, dividing each epoch into smaller, manageable segments for detailed LSTM analysis.
-- Creation of Segmented ECG and ACC Data: Developed a method for creating segmented ECG and ACC data, aligning both datasets for synchronized analysis in LSTM, ensuring that each segment contains relevant and aligned information from both data types.
 
 ## Modeling Process 
 
@@ -183,9 +182,8 @@ python main.py
 ## Contributing
 
 Contributions to the AGENDER 2.0 project are welcome. Please ensure to follow the standard procedures for contributing to open-source projects, including using pull requests for proposing changes.
-License
 
-This project is licensed under the MIT License.
+License: this project is licensed under the MIT License.
 
 
 ## Acknowledgments
