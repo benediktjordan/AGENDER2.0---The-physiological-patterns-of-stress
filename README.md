@@ -183,7 +183,8 @@ python main.py
 
 Contributions to the AGENDER 2.0 project are welcome. Please ensure to follow the standard procedures for contributing to open-source projects, including using pull requests for proposing changes.
 
-License: this project is licensed under the MIT License.
+## License
+this project is licensed under the MIT License.
 
 
 ## Acknowledgments
